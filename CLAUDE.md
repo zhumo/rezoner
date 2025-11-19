@@ -4,91 +4,166 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a San Francisco rezoning analysis tool built as a Shiny web application. It allows users to visualize and analyze the impact of various rezoning scenarios on housing development potential across SF parcels.
+This is a San Francisco rezoning analysis tool built as a client-side web application using Vue.js. It allows users to visualize and analyze the impact of various rezoning scenarios on housing development potential across SF parcels.
+
+**Key Features:**
+- Interactive map of SF parcels with Mapbox GL JS
+- Three zoning layers: Original, Proposed (June 2025), User's Custom
+- Attribute-based parcel filtering and selection
+- Floor/unit calculation for different zoning scenarios
+- Client-side only (no server, static hosting)
 
 ## Running the Application
 
 ### Local Development
-In RStudio, open `rezoner/app.R` and click 'Run App'. The app requires these packages:
-```r
-required_packages <- c("shiny", "dplyr", "sf", "shinyjs", "shinyBS", "mapboxer", "sortable", "shinyWidgets", "stringr", "viridis", "compiler", "RColorBrewer")
+
+From the `web-app` directory:
+
+```bash
+npm install
+npm run dev
 ```
 
-If package installation fails, use: `install.packages('package_name', type='source')`
+The app will open at http://localhost:5173
 
-You do NOT need to source `main.R` to run the webapp. The required RDS files (`light_model.rds`, `sf_map.rds`, `five_rezonings_nongeo.rds`) are included in the repository.
+### Environment Setup
 
-### Reproducing Data Pipeline
-To regenerate the RDS files that power the app:
+1. Copy `.env.example` to `.env`
+2. Add your Mapbox token: `VITE_MAPBOX_TOKEN=pk.your_token_here`
+3. Get a free token at https://account.mapbox.com/
 
-1. Install git-lfs and run `git lfs pull`
-2. Install additional packages: `readr`, `readxl`, `tidyr`, `modelr`, `caret`, `sfarrow`, `rmapshaper`, `tidytransit`, `doParallel`, `lwgeom`
-3. Source `main.R` (may take over 1 hour depending on CPU cores)
+### Build for Production
 
-The pipeline in `main.R` executes in sequence:
-1. `merge_scenario_d.R` - Loads and merges multiple rezoning scenario GeoJSON files (Fall 2023, Jan 2024, May 2025) with parcel data
-2. `preprocessing.R` - Joins spatial data (heights, transit distances, AFFH scores, etc.) to parcels using centroid joins and parallelized nearest-neighbor calculations
-3. `filter_out_extraneous.R` - Filters dataset to relevant parcels
-4. `to_mapbox.R` - Converts processed data to Mapbox-compatible format
+```bash
+npm run build
+```
+
+Output will be in `dist/` directory, ready to deploy to any static hosting service (Netlify, Vercel, GitHub Pages, etc.).
 
 ## Architecture
 
+### Technology Stack
+- **Frontend**: Vue 3 + Vite
+- **Mapping**: Mapbox GL JS
+- **Data Processing**: Python (GeoPandas) or JavaScript (Turf.js)
+- **Hosting**: Static (client-side only, no server)
+
 ### Data Flow
-- **Source data**: `data/` directory contains GeoJSON files for parcels, zoning, transit, neighborhoods, etc.
-- **Processing pipeline**: `main.R` orchestrates the sequential processing steps
-- **App data**: Three RDS files in `rezoner/` directory:
-  - `five_rezonings_nongeo.RDS` - Full parcel data without geometries (for calculations)
-  - `sf_map.RDS` - Spatial data for map visualization
-  - `light_model.rds` - Statistical model for predicting housing units
 
-### App Structure (`rezoner/`)
-- `app.R` - Main application logic and server functions
-- `ui.R` - Shiny UI definition
-- `modules.R` - Reusable Shiny modules
-- `utils.R` - Utility functions for color palettes and text conversion
+1. **Source data**: `data/` directory contains GeoJSON files for parcels, zoning, transit, neighborhoods, etc. (see `data/explanation.md`)
+2. **Processing**: Python script (`scripts/combine_data.py`) combines source files into single GeoJSON
+3. **App data**: `web-app/public/parcels_combined.geojson` - Single source of truth with all parcel attributes
+4. **Frontend**: Vue.js loads combined GeoJSON and renders in Mapbox
 
-### Key Functions
+### App Structure (`web-app/`)
 
-**`update_df_()` in `app.R`** - Core function that calculates the effect of rezoning scenarios on housing unit predictions. Modify this to change how rezoning impacts are calculated.
+```
+web-app/
+├── src/
+│   ├── App.vue              - Root component
+│   ├── components/
+│   │   └── MapView.vue      - Map rendering component
+│   └── main.js              - App entry point
+├── public/
+│   └── parcels_combined.geojson  - Combined parcel data (generated)
+├── package.json
+└── vite.config.js
+```
 
-**`yimbycity()` in `app.R`** - Example custom rezoning function that demonstrates parcel-level zoning using block/lot combinations. Use as pattern for defining custom rezonings with greater resolution than the UI allows.
+### Data Processing (`scripts/`)
 
-**`union_of_maxdens()` in `app.R`** - Takes the maximum density across all rezoning scenarios (M1-M5) for each parcel.
+**`combine_data.py`** - Python script that combines source GeoJSON files:
+- Loads parcel geometries
+- Spatially joins current height limits (using centroid)
+- Spatially joins current zoning districts (using centroid)
+- Spatially joins neighborhoods (using centroid)
+- Attribute join proposed rezoning by mapblklot
+- Exports single combined GeoJSON file
 
-**`get_denser_zone()` in `app.R`** - Compares zoning by extracting numeric height values and returns the more permissive zoning.
+Run: `python scripts/combine_data.py`
 
-**`centroid_join()` in `preprocessing.R`** - Spatially joins auxiliary data to parcels using point-on-surface (handles non-convex polygons better than true centroids).
+## Three Zoning Layers
 
-**`parallelize_nearest()` in `preprocessing.R`** - Parallelized nearest-neighbor distance calculations for transit/amenity proximity using multiple cores.
+The application tracks three zoning scenarios for each parcel:
 
-### Rezoning Data Structure
-The app tracks five rezoning scenarios (M1-M5):
-- M1, M2, M3: Earlier rezoning proposals
-- M4: Fall 2023 rezoning (`Fall2023Rezoning.json`)
-- M5: January 2024 rezoning (`rezone_sites_1_2024.geojson`)
-- M6: May 2025 rezoning (`data/rezone_sites_5_2025.geojson`) with base and local variants
+1. **Original Zoning** - Current San Francisco zoning as of 2024:
+   - `current_height_num` - Height limit (numeric, e.g., 40)
+   - `current_height_code` - Height district code (e.g., "40-X")
+   - `current_zoning` - Zoning code (e.g., "RH-2")
+   - `current_zoning_name` - Full zoning name (e.g., "RESIDENTIAL- HOUSE, TWO FAMILY")
 
-Each scenario defines `ZONING` (e.g., "85' Height Allowed") and height values for parcels.
+2. **Proposed Zoning** - June 2025 rezoning proposal (latest):
+   - `proposed_height` - Proposed height (e.g., "85' Height Allowed")
+   - `proposed_height_num` - Proposed height (numeric, e.g., 85)
 
-### Spatial Data Integration
-`preprocessing.R` joins these datasets to parcels:
-- Height and bulk districts
-- Transit distances (BART, Caltrain, MUNI rapid)
-- AFFH (Affirmatively Furthering Fair Housing) opportunity scores
-- Commercial corridors
-- Parks, schools, and other amenities
-- Development pipeline data
-- Supervisor districts
+3. **User's Custom Zoning** - User-defined via UI (stored in app state):
+   - Users can select parcels and apply custom height limits
+   - Calculated client-side
+
+## Key Data Files
+
+See `data/explanation.md` for complete documentation.
+
+**Essential source files:**
+- `FourPlex6plexCorners_20240416.geojson` (78MB) - All parcel geometries
+- `Zoning Map - Height and Bulk Districts_20240121.geojson` (5.1MB) - Current height limits
+- `Zoning Map - Zoning Districts.geojson` (6.4MB) - Current zoning types
+- `rezone_sites_4_2025.geojson` (58MB) - June 2025 proposed rezoning (LATEST)
+- `Analysis Neighborhoods_20240202.geojson` (1.6MB) - Neighborhood boundaries
+
+**Generated file:**
+- `web-app/public/parcels_combined.geojson` - Combined parcel data (created by `scripts/combine_data.py`)
+
+## Parcel Data Structure
+
+Each parcel in `parcels_combined.geojson` has these properties:
+
+```json
+{
+  "mapblklot": "1067034",
+  "Shape__Area": 2999.99609375,
+  "Shape__Length": 289.99976435887436,
+  "nhood": "Russian Hill",
+  "current_height_num": 40,
+  "current_height_code": "40-X",
+  "current_zoning": "RH-2",
+  "current_zoning_name": "RESIDENTIAL- HOUSE, TWO FAMILY",
+  "zoning_category": "Residential",
+  "proposed_height": "85' Height Allowed",
+  "proposed_height_num": 85
+}
+```
 
 ## Constants
+
 - `building_efficiency_discount = 0.8` - Factor for buildable area vs lot size
 - `typical_unit_size = 850` sq ft
-- Special zoning categories: "Increased density up to four units", "Increased density up to six units", "No height change, density decontrol", "300' Height Allowed"
+- Special zoning categories: "Increased density up to four units", "Increased density up to six units", "Density decontrol, unchanged height"
 
-## Debugging
-Use `browser()` to set breakpoints in the code. The app runs with `options(shiny.fullstacktrace=TRUE)` for detailed error traces.
+## Development Workflow
+
+1. **Update source data**: Place new GeoJSON files in `data/` directory
+2. **Regenerate combined data**: Run `python scripts/combine_data.py`
+3. **Test in dev mode**: Run `npm run dev` in `web-app/`
+4. **Build for production**: Run `npm run build` in `web-app/`
+5. **Deploy**: Upload `dist/` directory to static hosting
 
 ## Geospatial Notes
-- CRS transformations ensure all datasets align with the base parcel layer
-- `sf_use_s2(F)` disables spherical geometry for faster planar operations
-- Parcels are identified by `mapblklot` (block/lot combination) visible in map popups
+
+- All GeoJSON files use CRS EPSG:4326 (WGS84) for Mapbox compatibility
+- Spatial joins use parcel centroids to handle non-convex polygons
+- Parcels are uniquely identified by `mapblklot` (block/lot combination)
+- Mapbox GL JS handles geometry rendering and user interactions
+
+## Migration Status
+
+This project was migrated from R Shiny to Vue.js. See `MIGRATION_PLAN.md` for details.
+
+**Completed:**
+- ✅ Phase 0: Display Map
+- ✅ Phase 1: Add Parcels (data processing script created)
+
+**In Progress:**
+- [ ] Phase 1: Load combined parcel data with hover tooltips
+- [ ] Phase 2: Interactive zoning editor UI
+- [ ] Phase 3: Floor calculation & impact analysis

@@ -23,6 +23,9 @@ All parcels with fourplex/sixplex zoning from April 2024.
 - `Shape__Area`: Area
 - `Shape__Length`: Perimeter length
 
+### `fourplex_areas_12_2023.geojson` (133B)
+Legacy fourplex areas from December 2023 (stub file).
+
 ## Proposed Rezoning
 
 ### `rezone_sites_4_2025.geojson` (58MB) - **June 2025 Proposal**
@@ -89,21 +92,14 @@ San Francisco street network.
 ### `Caltrain Stations and Stops.geojson` (31KB)
 Caltrain station locations in San Francisco.
 
+### `BART_System_2020/BART_Station.geojson` (24KB)
+BART station locations.
+
 ### `Park Lands - Recreation and Parks Department.geojson` (1.3MB)
 Parks and recreation areas.
 
 ### `Schools_College_20240215.geojson` (33KB)
 School locations.
-
-## Development Data
-
-### `SF Development Pipeline 2022 Q1 [REVISED]_20240331.geojson` (58MB)
-Proposed and under-construction development projects.
-
-## Other Data Files
-
-### `Assessor Historical Secured Property Tax Rolls_20240121.geojson` (134B)
-Property tax assessment data (appears to be a stub file).
 
 ## Data Usage Notes
 
@@ -124,7 +120,6 @@ For the web application, we need to combine:
    - Neighborhoods
    - Transit distances
    - Parks, schools
-   - Development pipeline
 
 The combined dataset should allow users to:
 - View original zoning for each parcel

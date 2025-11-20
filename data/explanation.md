@@ -23,10 +23,10 @@ All parcels with fourplex/sixplex zoning from April 2024.
 - `Shape__Area`: Area
 - `Shape__Length`: Perimeter length
 
-## Rezoning Proposals
+## Proposed Rezoning
 
-### `rezone_sites_4_2025.geojson` (58MB) - **LATEST PROPOSAL (June 2025)**
-Most recent rezoning proposal from June 2025.
+### `rezone_sites_4_2025.geojson` (58MB) - **June 2025 Proposal**
+Rezoning proposal from June 2025 (latest).
 
 **Properties:**
 - `OBJECTID`: Unique ID
@@ -36,11 +36,6 @@ Most recent rezoning proposal from June 2025.
 - `gen_hght`: Existing height as numeric value (e.g., 40)
 - `Shape__Area`: Area in square feet
 - `Shape__Length`: Perimeter length
-
-### Legacy Rezoning Files (Not Currently Used)
-- `rezone_sites_1_2024.geojson`: January 2024 proposal
-- `Fall2023Rezoning.json`: Fall 2023 proposal
-- `fourplex_areas_12_2023.geojson`: December 2023 fourplex areas
 
 ## Current Zoning
 

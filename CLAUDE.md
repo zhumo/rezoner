@@ -105,11 +105,11 @@ The application tracks three zoning scenarios for each parcel:
 See `data/explanation.md` for complete documentation.
 
 **Essential source files:**
-- `FourPlex6plexCorners_20240416.geojson` (78MB) - All parcel geometries
-- `Zoning Map - Height and Bulk Districts_20240121.geojson` (5.1MB) - Current height limits
-- `Zoning Map - Zoning Districts.geojson` (6.4MB) - Current zoning types
-- `rezone_sites_4_2025.geojson` (58MB) - June 2025 proposed rezoning (LATEST)
-- `Analysis Neighborhoods_20240202.geojson` (1.6MB) - Neighborhood boundaries
+- `parcels-all.geojson` (78MB) - All parcel geometries
+- `zoning-height-bulk.geojson` (5.1MB) - Current height limits
+- `zoning-districts.geojson` (6.4MB) - Current zoning types
+- `rezone-proposed-2025-06.geojson` (58MB) - June 2025 proposed rezoning (LATEST)
+- `neighborhoods.geojson` (1.6MB) - Neighborhood boundaries
 
 **Generated file:**
 - `web-app/public/parcels_combined.geojson` - Combined parcel data (created by `scripts/combine_data.py`)

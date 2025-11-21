@@ -15,11 +15,11 @@ pip install geopandas pandas
 Combines parcel geometries with zoning data to create a single source of truth GeoJSON file.
 
 **Input files:**
-- `data/FourPlex6plexCorners_20240416.geojson` - Parcel geometries
-- `data/Zoning Map - Height and Bulk Districts_20240121.geojson` - Current height limits
-- `data/Zoning Map - Zoning Districts.geojson` - Current zoning types
-- `data/rezone_sites_4_2025.geojson` - June 2025 proposed rezoning
-- `data/Analysis Neighborhoods_20240202.geojson` - Neighborhood boundaries
+- `data/parcels-all.geojson` - Parcel geometries
+- `data/zoning-height-bulk.geojson` - Current height limits
+- `data/zoning-districts.geojson` - Current zoning types
+- `data/rezone-proposed-2025-06.geojson` - June 2025 proposed rezoning
+- `data/neighborhoods.geojson` - Neighborhood boundaries
 
 **Output:**
 - `web-app/public/parcels_combined.geojson` - Combined parcel data with all attributes

@@ -4,7 +4,16 @@ This folder contains GeoJSON files for San Francisco parcels and geographic feat
 
 ## Core Parcel Data
 
-### `Parcels_Corner.geojson` (68MB)
+### `parcels-all.geojson` (78MB)
+All parcels with fourplex/sixplex zoning from April 2024.
+
+**Properties:**
+- `OBJECTID`: Unique ID
+- `mapblklot`: Parcel identifier
+- `Shape__Area`: Area
+- `Shape__Length`: Perimeter length
+
+### `parcels-corner.geojson` (68MB)
 Corner parcels in San Francisco that qualify for increased density (6 units instead of 4 under certain zoning).
 
 **Properties:**
@@ -14,21 +23,9 @@ Corner parcels in San Francisco that qualify for increased density (6 units inst
 - `st_area(shape)`: Area in square feet
 - `st_length(shape)`: Perimeter length in feet
 
-### `FourPlex6plexCorners_20240416.geojson` (78MB)
-All parcels with fourplex/sixplex zoning from April 2024.
-
-**Properties:**
-- `OBJECTID`: Unique ID
-- `mapblklot`: Parcel identifier
-- `Shape__Area`: Area
-- `Shape__Length`: Perimeter length
-
-### `fourplex_areas_12_2023.geojson` (133B)
-Legacy fourplex areas from December 2023 (stub file).
-
 ## Proposed Rezoning
 
-### `rezone_sites_4_2025.geojson` (58MB) - **June 2025 Proposal**
+### `rezone-proposed-2025-06.geojson` (58MB) - **June 2025 Proposal**
 Rezoning proposal from June 2025 (latest).
 
 **Properties:**
@@ -42,7 +39,7 @@ Rezoning proposal from June 2025 (latest).
 
 ## Current Zoning
 
-### `Zoning Map - Zoning Districts.geojson` (6.4MB)
+### `zoning-districts.geojson` (6.4MB)
 Current zoning districts for San Francisco.
 
 **Properties:**
@@ -55,14 +52,14 @@ Current zoning districts for San Francisco.
 - `objectid`: Unique ID
 - `shape_area`, `shape_length`: Geometry measurements
 
-### `Zoning Map - Height and Bulk Districts_20240121.geojson` (5.1MB)
+### `zoning-height-bulk.geojson` (5.1MB)
 Current height and bulk restrictions for San Francisco parcels.
 
 **Properties:**
 - `height`: Height limit code (e.g., "40-X", "65-A", "450-S")
 - `gen_hght`: Simplified height value as number (e.g., 40, 65, 450)
 
-### `Zoning Map - Special Use Districts_20240122.geojson` (2.0MB)
+### `zoning-special-use.geojson` (2.0MB)
 Special use districts with additional regulations.
 
 **Properties:**
@@ -71,34 +68,34 @@ Special use districts with additional regulations.
 
 ## Geographic Reference Layers
 
-### `Analysis Neighborhoods_20240202.geojson` (1.6MB)
+### `neighborhoods.geojson` (1.6MB)
 San Francisco neighborhood boundaries for analysis.
 
 **Properties:**
 - `nhood`: Neighborhood name
 
-### `Supervisor Districts (2022)_20240124.geojson` (297KB)
+### `supervisor-districts.geojson` (297KB)
 SF Board of Supervisors district boundaries.
 
 **Properties:**
 - `supervisor`: Supervisor name
 - `district`: District number
 
-### `Streets   Active and Retired_20240331.geojson` (14MB)
+### `streets.geojson` (14MB)
 San Francisco street network.
 
 ## Transit and Amenities
 
-### `Caltrain Stations and Stops.geojson` (31KB)
+### `transit-caltrain.geojson` (31KB)
 Caltrain station locations in San Francisco.
 
-### `BART_System_2020/BART_Station.geojson` (24KB)
+### `transit-bart.geojson` (24KB)
 BART station locations.
 
-### `Park Lands - Recreation and Parks Department.geojson` (1.3MB)
+### `parks.geojson` (1.3MB)
 Parks and recreation areas.
 
-### `Schools_College_20240215.geojson` (33KB)
+### `schools.geojson` (33KB)
 School locations.
 
 ## Data Usage Notes
@@ -106,15 +103,15 @@ School locations.
 For the web application, we need to combine:
 
 1. **Parcel geometries** from one of:
-   - `FourPlex6plexCorners_20240416.geojson` (has all parcels)
-   - `Parcels_Corner.geojson` (corner parcels only)
+   - `parcels-all.geojson` (has all parcels)
+   - `parcels-corner.geojson` (corner parcels only)
 
 2. **Current zoning** from:
-   - `Zoning Map - Zoning Districts.geojson` (zoning type)
-   - `Zoning Map - Height and Bulk Districts_20240121.geojson` (height limits)
+   - `zoning-districts.geojson` (zoning type)
+   - `zoning-height-bulk.geojson` (height limits)
 
 3. **Proposed rezoning** from:
-   - `rezone_sites_4_2025.geojson` (June 2025 proposal - LATEST)
+   - `rezone-proposed-2025-06.geojson` (June 2025 proposal - LATEST)
 
 4. **Optional enrichment data**:
    - Neighborhoods

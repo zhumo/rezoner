@@ -21,11 +21,11 @@ DATA_DIR = BASE_DIR / "data"
 OUTPUT_PATH = BASE_DIR / "web-app" / "public" / "parcels_combined.geojson"
 
 print("Loading parcel geometries...")
-parcels = gpd.read_file(DATA_DIR / "FourPlex6plexCorners_20240416.geojson")
+parcels = gpd.read_file(DATA_DIR / "parcels-all.geojson")
 print(f"  Loaded {len(parcels)} parcels")
 
 print("\nLoading current height limits...")
-heights = gpd.read_file(DATA_DIR / "Zoning Map - Height and Bulk Districts_20240121.geojson")
+heights = gpd.read_file(DATA_DIR / "zoning-height-bulk.geojson")
 heights = heights[['gen_hght', 'height', 'geometry']].rename(columns={
     'gen_hght': 'current_height_num',
     'height': 'current_height_code'
@@ -33,7 +33,7 @@ heights = heights[['gen_hght', 'height', 'geometry']].rename(columns={
 print(f"  Loaded {len(heights)} height districts")
 
 print("\nLoading current zoning districts...")
-zoning = gpd.read_file(DATA_DIR / "Zoning Map - Zoning Districts.geojson")
+zoning = gpd.read_file(DATA_DIR / "zoning-districts.geojson")
 zoning = zoning[['zoning', 'districtname', 'gen', 'geometry']].rename(columns={
     'zoning': 'current_zoning',
     'districtname': 'current_zoning_name',
@@ -42,7 +42,7 @@ zoning = zoning[['zoning', 'districtname', 'gen', 'geometry']].rename(columns={
 print(f"  Loaded {len(zoning)} zoning districts")
 
 print("\nLoading proposed rezoning (June 2025)...")
-proposed = gpd.read_file(DATA_DIR / "rezone_sites_4_2025.geojson")
+proposed = gpd.read_file(DATA_DIR / "rezone-proposed-2025-06.geojson")
 proposed = proposed[['mapblklot', 'NEW_HEIGHT', 'gen_hght']].rename(columns={
     'NEW_HEIGHT': 'proposed_height',
     'gen_hght': 'proposed_height_num'
@@ -51,7 +51,7 @@ proposed = proposed.drop(columns=['geometry'])
 print(f"  Loaded {len(proposed)} proposed rezoning parcels")
 
 print("\nLoading neighborhoods...")
-neighborhoods = gpd.read_file(DATA_DIR / "Analysis Neighborhoods_20240202.geojson")
+neighborhoods = gpd.read_file(DATA_DIR / "neighborhoods.geojson")
 neighborhoods = neighborhoods[['nhood', 'geometry']]
 print(f"  Loaded {len(neighborhoods)} neighborhoods")
 
